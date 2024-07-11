@@ -1,0 +1,310 @@
+<!doctype html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Present Value of Annuities Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #4a69bd;
+        }
+        .question {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .answers {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4a69bd;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #3c5aa6;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        .navigation {
+            margin-top: 20px;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .progress {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Present Value of Annuities Game</h1>
+        <div id="intro">
+            <h2>Introduction</h2>
+            <p>The present value of an annuity is a crucial concept in finance that calculates the current value of a series of future payments, given a specified rate of return. There are two types of annuities:</p>
+            <ul>
+                <li><strong>Ordinary Annuity:</strong> Payments are made at the end of each period.</li>
+                <li><strong>Annuity Due:</strong> Payments are made at the beginning of each period.</li>
+            </ul>
+            <p>Understanding these concepts is essential for business students as they form the foundation for many financial decisions, including investment analysis, loan calculations, and retirement planning. The present value of an annuity helps determine the lump sum amount needed today to fund a series of future payments, considering the time value of money.</p>
+            <h2>Instructions</h2>
+            <p>1. Click "Start Game" to begin.</p>
+            <p>2. You will be presented with 10 random questions about the present value of annuities.</p>
+            <p>3. Select the best answer from the four options provided.</p>
+            <p>4. If you answer incorrectly, you'll have another chance to select the right answer.</p>
+            <p>5. Use the "Previous" and "Next" buttons to navigate between questions.</p>
+            <p>6. Your progress will be shown at the bottom of the screen.</p>
+            <p>Good luck!</p>
+            <button onclick="startGame()">Start Game</button>
+        </div>
+        <div id="game" style="display:none;">
+            <div id="question-container">
+                <div class="question" id="question"></div>
+                <div class="answers" id="answers"></div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+            <div class="navigation">
+                <button id="prev" onclick="prevQuestion()" disabled>Previous</button>
+                <button id="next" onclick="nextQuestion()" disabled>Next</button>
+            </div>
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+
+    <script>
+        const allQuestions = [
+            {
+                question: "What is the present value of an ordinary annuity of $1,000 paid annually for 5 years at a 6% annual interest rate?",
+                answers: ["$4,212.36", "$4,329.48", "$4,446.60", "$4,563.72"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $1,500 paid annually for 4 years at an 8% annual interest rate.",
+                answers: ["$5,206.57", "$5,362.77", "$5,518.97", "$5,675.17"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $2,000 paid semi-annually for 3 years at a 10% annual interest rate?",
+                answers: ["$10,567.79", "$10,879.22", "$11,190.65", "$11,502.08"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $2,500 paid annually for 6 years at a 6% annual interest rate.",
+                answers: ["$12,561.57", "$12,938.42", "$13,315.27", "$13,692.12"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $1,800 paid semi-annually for 4 years at an 8% annual interest rate?",
+                answers: ["$12,123.45", "$12,487.15", "$12,850.85", "$13,214.55"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $3,000 paid annually for 5 years at a 10% annual interest rate.",
+                answers: ["$12,434.47", "$12,807.50", "$13,180.53", "$13,553.56"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $2,200 paid semi-annually for 3 years at a 6% annual interest rate?",
+                answers: ["$12,012.87", "$12,373.26", "$12,733.65", "$13,094.04"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $1,200 paid annually for 7 years at an 8% annual interest rate.",
+                answers: ["$6,643.12", "$6,842.41", "$7,041.70", "$7,240.99"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $4,000 paid semi-annually for 5 years at a 12% annual interest rate?",
+                answers: ["$29,778.69", "$30,672.01", "$31,565.33", "$32,458.65"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $2,800 paid annually for 4 years at a 6% annual interest rate.",
+                answers: ["$10,090.56", "$10,393.28", "$10,696.00", "$10,998.72"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $1,600 paid semi-annually for 3 years at an 8% annual interest rate?",
+                answers: ["$8,567.68", "$8,824.71", "$9,081.74", "$9,338.77"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $3,200 paid annually for 6 years at a 10% annual interest rate.",
+                answers: ["$14,721.92", "$15,163.58", "$15,605.24", "$16,046.90"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $2,500 paid semi-annually for 4 years at a 6% annual interest rate?",
+                answers: ["$17,345.75", "$17,866.12", "$18,386.49", "$18,906.86"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $1,800 paid annually for 5 years at an 8% annual interest rate.",
+                answers: ["$7,484.64", "$7,709.18", "$7,933.72", "$8,158.26"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $3,500 paid semi-annually for 3 years at a 12% annual interest rate?",
+                answers: ["$17,567.45", "$18,094.47", "$18,621.49", "$19,148.51"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $2,200 paid annually for 7 years at a 6% annual interest rate.",
+                answers: ["$12,642.44", "$13,021.71", "$13,400.98", "$13,780.25"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $1,400 paid semi-annually for 5 years at an 8% annual interest rate?",
+                answers: ["$11,234.89", "$11,571.94", "$11,908.99", "$12,246.04"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $3,800 paid annually for 4 years at a 10% annual interest rate.",
+                answers: ["$12,721.40", "$13,103.04", "$13,484.68", "$13,866.32"],
+                correct: 2
+            },
+            {
+                question: "What is the present value of an ordinary annuity of $2,600 paid semi-annually for 3 years at a 6% annual interest rate?",
+                answers: ["$14,196.12", "$14,622.00", "$15,047.88", "$15,473.76"],
+                correct: 1
+            },
+            {
+                question: "Calculate the present value of an annuity due of $1,900 paid annually for 6 years at an 8% annual interest rate.",
+                answers: ["$8,901.98", "$9,169.04", "$9,436.10", "$9,703.16"],
+                correct: 2
+            }
+        ];
+
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startGame() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            questions = getRandomQuestions(allQuestions, 10);
+            loadQuestion();
+            updateProgress();
+        }
+
+        function getRandomQuestions(arr, n) {
+            let result = new Array(n),
+                len = arr.length,
+                taken = new Array(len);
+            if (n > len)
+                throw new RangeError("getRandomQuestions: more elements taken than available");
+            while (n--) {
+                let x = Math.floor(Math.random() * len);
+                result[n] = arr[x in taken ? taken[x] : x];
+                taken[x] = --len in taken ? taken[len] : len;
+            }
+            return result;
+        }
+
+        function loadQuestion() {
+            const questionContainer = document.getElementById('question');
+            const answersContainer = document.getElementById('answers');
+            const questionData = questions[currentQuestionIndex];
+            
+            questionContainer.textContent = questionData.question;
+            answersContainer.innerHTML = '';
+            
+            let shuffledAnswers = [...questionData.answers];
+            shuffleArray(shuffledAnswers);
+            
+            shuffledAnswers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.onclick = () => selectAnswer(index);
+                answersContainer.appendChild(button);
+            });
+            
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('prev').disabled = currentQuestionIndex === 0;
+            document.getElementById('next').disabled = true;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function selectAnswer(index) {
+            const questionData = questions[currentQuestionIndex];
+            const selectedAnswer = document.getElementById('answers').children[index];
+            const feedbackContainer = document.getElementById('feedback');
+            
+            if (questionData.answers[questionData.correct] === selectedAnswer.textContent) {
+                feedbackContainer.textContent = 'Correct!';
+                feedbackContainer.style.color = 'green';
+                document.getElementById('next').disabled = false;
+                score++;
+            } else {
+                feedbackContainer.textContent = 'Incorrect. Try again!';
+                feedbackContainer.style.color = 'red';
+            }
+            
+            updateProgress();
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+                updateProgress();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+                updateProgress();
+            } else {
+                alert(`Game Over! Your score: ${score}/${questions.length}`);
+            }
+        }
+
+        function updateProgress() {
+            const progressContainer = document.getElementById('progress');
+            progressContainer.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length} | Score: ${score}/${questions.length}`;
+        }
+    </script>
+</body>
+</html>
